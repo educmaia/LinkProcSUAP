@@ -249,7 +249,7 @@
   "processos": []
 }
                 </div>
-                <button class="copy-btn" onclick="copiarJSON()" title="Copiar JSON">
+                <button class="copy-btn" onclick="copiarJSON(event)" title="Copiar JSON">
                     📋 Copiar
                 </button>
             </div>
@@ -326,7 +326,7 @@
             stats.style.display = 'block';
         }
         
-        function copiarJSON() {
+        function copiarJSON(event) {
             const output = document.getElementById('json-output');
             const texto = output.textContent;
             
