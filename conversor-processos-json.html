@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Processos para JSON</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2f9e41 0%, #1e6e2b 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1rem;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #2f9e41;
+            box-shadow: 0 0 0 3px rgba(47, 158, 65, 0.1);
+        }
+
+        .hint {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2f9e41 0%, #1e6e2b 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(47, 158, 65, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 2px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #2f9e41;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #268a37;
+            transform: translateY(-2px);
+        }
+
+        .output-section {
+            margin-top: 30px;
+        }
+
+        .output-container {
+            position: relative;
+        }
+
+        .json-output {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            opacity: 1;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d1f2d7;
+            color: #0d4d15;
+            border: 1px solid #b8e6c1;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .stats {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚖️ Conversor de Processos para JSON</h1>
+        
+        <div class="input-section">
+            <label for="processos-input">Lista de Processos:</label>
+            <div class="input-container">
+                <textarea 
+                    id="processos-input" 
+                    placeholder="Cole aqui a lista de processos, um por linha:&#10;&#10;23430.000701.2021-17&#10;23430.001200.2021-58&#10;23430.000233.2025-12&#10;&#10;Ou separados por vírgula, espaço, etc."
+                ></textarea>
+            </div>
+            <div class="hint">
+                📝 Aceita números separados por linha, vírgula, espaço ou ponto e vírgula
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="converterParaJSON()">
+                🔄 Converter para JSON
+            </button>
+            <button class="btn-secondary" onclick="limparCampos()">
+                🗑️ Limpar
+            </button>
+        </div>
+
+        <div class="output-section">
+            <label for="json-output">Resultado JSON:</label>
+            <div class="output-container">
+                <div id="json-output" class="json-output">
+                    {
+  "processos": []
+}
+                </div>
+                <button class="copy-btn" onclick="copiarJSON()" title="Copiar JSON">
+                    📋 Copiar
+                </button>
+            </div>
+            
+            <div id="status" class="status" style="display: none;"></div>
+            <div id="stats" class="stats" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        function converterParaJSON() {
+            const input = document.getElementById('processos-input').value.trim();
+            const output = document.getElementById('json-output');
+            const status = document.getElementById('status');
+            const stats = document.getElementById('stats');
+            
+            // Limpar status anterior
+            status.style.display = 'none';
+            stats.style.display = 'none';
+            
+            if (!input) {
+                mostrarStatus('Por favor, insira uma lista de processos.', 'error');
+                return;
+            }
+            
+            try {
+                // Extrair números de processo usando regex mais robusta
+                const regex = /\d{5}\.\d{6}\.\d{4}-\d{2}/g;
+                const processos = input.match(regex) || [];
+                
+                // Remover duplicatas mantendo a ordem
+                const processosUnicos = [...new Set(processos)];
+                
+                // Criar o objeto JSON
+                const resultado = {
+                    "processos": processosUnicos
+                };
+                
+                // Exibir o resultado formatado
+                output.textContent = JSON.stringify(resultado, null, 2);
+                
+                // Mostrar estatísticas
+                mostrarEstatisticas(processos.length, processosUnicos.length);
+                
+                if (processosUnicos.length > 0) {
+                    mostrarStatus(`✅ ${processosUnicos.length} processo(s) convertido(s) com sucesso!`, 'success');
+                } else {
+                    mostrarStatus('⚠️ Nenhum número de processo válido encontrado. Verifique o formato (ex: 23430.000701.2021-17)', 'error');
+                }
+                
+            } catch (error) {
+                mostrarStatus('❌ Erro ao processar a lista: ' + error.message, 'error');
+            }
+        }
+        
+        function mostrarStatus(mensagem, tipo) {
+            const status = document.getElementById('status');
+            status.textContent = mensagem;
+            status.className = `status ${tipo}`;
+            status.style.display = 'block';
+        }
+        
+        function mostrarEstatisticas(total, unicos) {
+            const stats = document.getElementById('stats');
+            const duplicatas = total - unicos;
+            
+            let texto = `📊 Estatísticas: ${total} processo(s) encontrado(s)`;
+            if (duplicatas > 0) {
+                texto += `, ${duplicatas} duplicata(s) removida(s)`;
+            }
+            texto += `, ${unicos} processo(s) único(s) no resultado final.`;
+            
+            stats.textContent = texto;
+            stats.style.display = 'block';
+        }
+        
+        function copiarJSON() {
+            const output = document.getElementById('json-output');
+            const texto = output.textContent;
+            
+            navigator.clipboard.writeText(texto).then(() => {
+                // Feedback visual temporário
+                const btn = event.target;
+                const textoOriginal = btn.textContent;
+                btn.textContent = '✅ Copiado!';
+                btn.style.background = '#2f9e41';
+                
+                setTimeout(() => {
+                    btn.textContent = textoOriginal;
+                    btn.style.background = '#6c757d';
+                }, 2000);
+                
+                mostrarStatus('📋 JSON copiado para a área de transferência!', 'success');
+            }).catch(() => {
+                mostrarStatus('❌ Erro ao copiar. Tente selecionar e copiar manualmente.', 'error');
+            });
+        }
+        
+        function limparCampos() {
+            document.getElementById('processos-input').value = '';
+            document.getElementById('json-output').textContent = '{\n  "processos": []\n}';
+            document.getElementById('status').style.display = 'none';
+            document.getElementById('stats').style.display = 'none';
+        }
+        
+        // Permitir conversão com Enter (Ctrl+Enter)
+        document.getElementById('processos-input').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                converterParaJSON();
+            }
+        });
+    </script>
+</body>
+</html>
